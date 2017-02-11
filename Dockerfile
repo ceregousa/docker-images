@@ -17,9 +17,8 @@ RUN curl -L https://github.com/progrium/entrykit/releases/download/v0.4.0/entryk
     mv entrykit /bin/entrykit && \
     entrykit --symlink
 
-COPY ./docker-compose.yml /src/
-
-WORKDIR /src
+# COPY ./docker-compose.yml /src/
+# WORKDIR /src
 
 RUN echo $'#!/bin/bash \n\
 /bin/docker daemon' > /bin/docker-daemon && chmod +x /bin/docker-daemon
@@ -30,11 +29,11 @@ docker info && \n\
 echo Cloning /var/lib/docker to /cached-graph... && \n\
 ls -lah /var/lib/docker' > /bin/docker-compose-pull && chmod +x /bin/docker-compose-pull
 
-ENV PREHOOK_PRINT 'cat /src/docker-compose.yml'
+# ENV PREHOOK_PRINT 'cat /src/docker-compose.yml'
 ENV SWITCH_PULL "codep docker-daemon docker-compose-pull"
 ENV SWITCH_SHELL bash
 ENV CODEP_DAEMON '/bin/docker daemon'
-ENV CODEP_COMPOSE '/usr/bin/docker-compose up'
+# ENV CODEP_COMPOSE '/usr/bin/docker-compose up'
 
 # Include useful functions to start/stop docker daemon in garden-runc containers on Concourse CI
 # Its usage would be something like: source /docker.lib.sh && start_docker "" "" "-g=$(pwd)/graph"
