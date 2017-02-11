@@ -1,5 +1,5 @@
 build:
-	docker build -t ceregousa/dind -f Dockerfile.test .
+	docker build -t ceregousa/dind .
 
 run:
 	docker run --privileged ceregousa/dind
