@@ -4,7 +4,7 @@ ENV DOCKER_VERSION=1.13.1 \
  DOCKER_COMPOSE_VERSION=1.10.1 \
  BUNDLER_VERSION=1.14.3 \
  BUILD_PACKAGES="curl-dev ruby-dev build-base" \
- DOCKER_PACKAGES="curl device-mapper mkinitfs zsh e2fsprogs e2fsprogs-extra iptables python-dev" \
+ DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev" \
  DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev tzdata yaml-dev mysql-dev" \
  RUBY_PACKAGES="ruby-rake ruby-json yaml nodejs"
 
@@ -49,7 +49,7 @@ RUN echo 'gem: --no-document' > /etc/gemrc && \
 
 # ENV PREHOOK_PRINT 'cat /src/docker-compose.yml'
 ENV SWITCH_PULL="codep docker-daemon docker-compose-pull" \
- SWITCH_SHELL=zsh \
+ SWITCH_SHELL=bash \
  CODEP_DAEMON='/bin/docker daemon'
 # ENV CODEP_COMPOSE '/usr/bin/docker-compose up'
 
