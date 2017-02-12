@@ -1,4 +1,10 @@
 ---
+# resource_types:
+#   - name: pull-request
+#     type: docker-image
+#     source:
+#       repository: jtarchie/pr
+
 resources:
   - name: master
     type: git
@@ -10,11 +16,34 @@ resources:
     type: docker-image
     source:
       repository: ceregousa/dind
-      tag: ruby-2.2
+      tag: docker-1.13
       username: {{dockerhub_username}}
       password: {{dockerhub_password}}
+  # - name: pr
+  #   type: pull-request
+  #   source:
+  #     repo: ceregousa/dind
+  #     access_token: {{cerebot-access-token}}
+  #     uri: git@github.com:ceregousa/dind.git
+  #     private_key: {{cerebot-github-priv-key}}
 
 jobs:
+  # - name: pr builder
+  #   build_logs_to_retain: 20
+  #   plan:
+  #     - get: pr
+  #       trigger: true
+  #     - put: pr
+  #       params: { path: pr, status: pending }
+  #     - task: build
+  #       privileged: true
+  #       file: pr/ci/build_image.yml
+  #   on_success:
+  #     put: pr
+  #     params: { path: pr, status: success }
+  #   on_failure:
+  #     puts: pr
+  #     params: { path: pr, status: failure }
   - name: create image
     build_logs_to_retain: 10
     plan:
