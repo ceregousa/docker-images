@@ -1,11 +1,17 @@
-FROM alpine:3.5
+FROM ruby:2.2-alpine
 
 ENV DOCKER_VERSION=1.13.1 \
- DOCKER_COMPOSE_VERSION=1.10.1
+ DOCKER_COMPOSE_VERSION=1.10.1 \
+ BUNDLER_VERSION=1.14.3 \
+ BUILD_PACKAGES="curl-dev ruby-dev build-base" \
+ DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev" \
+ DEV_PACKAGES="zlib-dev libxml2-dev libxslt-dev tzdata yaml-dev mysql-dev" \
+ RUBY_PACKAGES="ruby-rake ruby-json yaml nodejs"
 
 # Install Docker, Docker Compose
 RUN apk --update --no-cache \
-    add curl device-mapper mkinitfs zsh e2fsprogs e2fsprogs-extra iptables && \
+    add $BUILD_PACKAGES $DOCKER_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES \
+&& \
     curl https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz | tar zx && \
     mv /docker/* /bin/ && chmod +x /bin/docker* \
 && \
@@ -29,10 +35,22 @@ docker info && \n\
 echo Cloning /var/lib/docker to /cached-graph... && \n\
 ls -lah /var/lib/docker' > /bin/docker-compose-pull && chmod +x /bin/docker-compose-pull
 
+RUN echo 'gem: --no-document' > /etc/gemrc && \
+    chmod uog+r /etc/gemrc && \
+    gem install bundler -v $BUNDLER_VERSION && \
+    gem install -N nokogiri -- --use-system-libraries && \
+
+    # clean up
+    bundle config --global build.nokogiri  "--use-system-libraries" && \
+    bundle config --global build.nokogumbo "--use-system-libraries" && \
+    find / -type f -iname \*.apk-new -delete && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /usr/lib/lib/ruby/gems/*/cache/*
+
 # ENV PREHOOK_PRINT 'cat /src/docker-compose.yml'
-ENV SWITCH_PULL "codep docker-daemon docker-compose-pull"
-ENV SWITCH_SHELL bash
-ENV CODEP_DAEMON '/bin/docker daemon'
+ENV SWITCH_PULL="codep docker-daemon docker-compose-pull" \
+ SWITCH_SHELL=bash \
+ CODEP_DAEMON='/bin/docker daemon'
 # ENV CODEP_COMPOSE '/usr/bin/docker-compose up'
 
 # Include useful functions to start/stop docker daemon in garden-runc containers on Concourse CI
