@@ -2,10 +2,11 @@ FROM alpine:3.5
 
 ENV DOCKER_VERSION=1.13.1 \
   DOCKER_COMPOSE_VERSION=1.10.1 \
-  DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev"
+  DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev" \
+  OTHER="git"
 
 # Install Docker, Docker Compose
-RUN apk --update --no-cache add $DOCKER_PACKAGES && \
+RUN apk --update --no-cache add $DOCKER_PACKAGES $OTHER && \
     curl https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz | tar zx && \
     mv /docker/* /bin/ && chmod +x /bin/docker* \
 && \
