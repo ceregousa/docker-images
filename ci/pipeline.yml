@@ -1,16 +1,23 @@
 ---
-# resource_types:
-#   - name: pull-request
-#     type: docker-image
-#     source:
-#       repository: jtarchie/pr
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: jtarchie/pr
 
 resources:
   - name: master
     type: git
     source:
-      uri: git@github.com:ceregousa/dind.git
+      uri: {{cerego_docker_repo}}
       branch: master
+      private_key: {{cerebot-github-priv-key}}
+  - name: pr
+    type: pull-request
+    source:
+      repo: ceregousa/docker-images
+      access_token: {{cerebot-access-token}}
+      uri: {{cerego_docker_repo}}
       private_key: {{cerebot-github-priv-key}}
   - name: dind
     type: docker-image
@@ -19,35 +26,44 @@ resources:
       tag: docker-1.13
       username: {{dockerhub_username}}
       password: {{dockerhub_password}}
-  # - name: pr
-  #   type: pull-request
-  #   source:
-  #     repo: ceregousa/dind
-  #     access_token: {{cerebot-access-token}}
-  #     uri: git@github.com:ceregousa/dind.git
-  #     private_key: {{cerebot-github-priv-key}}
+  - name: ubuntu-git
+    type: docker-image
+    source:
+      repository: ceregousa/ubuntu-git
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
 
 jobs:
-  # - name: pr builder
-  #   build_logs_to_retain: 20
-  #   plan:
-  #     - get: pr
-  #       trigger: true
-  #     - put: pr
-  #       params: { path: pr, status: pending }
-  #     - task: build
-  #       privileged: true
-  #       file: pr/ci/build_image.yml
-  #   on_success:
-  #     put: pr
-  #     params: { path: pr, status: success }
-  #   on_failure:
-  #     puts: pr
-  #     params: { path: pr, status: failure }
-  - name: create image
+  - name: PR builder
+    build_logs_to_retain: 20
+    plan:
+      - get: pr
+        trigger: true
+        version: every
+      - put: pr
+        params: { path: pr, status: pending }
+      - aggregate:
+        - put: dind
+          params: { build: pr/dind, tag: pr/ci/tags/test }
+        - put: ubuntu-git
+          params: { build: pr/ubuntu-git, tag: pr/ci/tags/test }
+    on_success:
+      put: pr
+      params: { path: pr, status: success }
+    on_failure:
+      put: pr
+      params: { path: pr, status: failure }
+  - name: build dind
     build_logs_to_retain: 10
     plan:
       - get: master
         trigger: true
       - put: dind
-        params: { build: master, tag_as_latest: true }
+        params: { build: master/dind, tag_as_latest: true }
+  - name: build ubuntu-git
+    build_logs_to_retain: 10
+    plan:
+      - get: master
+        trigger: true
+      - put: ubuntu-git
+        params: { build: master/ubuntu-git, tag_as_latest: true }

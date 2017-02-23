@@ -1,2 +1,1 @@
-# dind
-Installs docker and docker-compose into a docker container
+# Docker images used in Concourse CI
