@@ -12,6 +12,12 @@ resources:
       uri: {{cerego_docker_repo}}
       branch: master
       private_key: {{cerebot-github-priv-key}}
+  - name: s3-resource-simple-repo
+    type: git
+    source:
+      uri: git@github.com:ceregousa/s3-resource-simple.git
+      branch: master
+      private_key: {{cerebot-github-priv-key}}
   - name: pr
     type: pull-request
     source:
@@ -30,6 +36,12 @@ resources:
     type: docker-image
     source:
       repository: ceregousa/ubuntu-git
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
+  - name: s3-resource-simple
+    type: docker-image
+    source:
+      repository: ceregousa/s3-resource-simple
       username: {{dockerhub_username}}
       password: {{dockerhub_password}}
 
@@ -67,3 +79,10 @@ jobs:
         trigger: true
       - put: ubuntu-git
         params: { build: master/ubuntu-git, tag_as_latest: true }
+  - name: build s3-resource-simple
+    build_logs_to_retain: 10
+    plan:
+      - get: s3-resource-simple-repo
+        trigger: true
+      - put: s3-resource-simple
+        params: { build: s3-resource-simple-repo, tag_as_latest: true }
