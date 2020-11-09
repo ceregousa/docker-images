@@ -4,6 +4,8 @@ resource_types:
     type: docker-image
     source:
       repository: jtarchie/pr
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
 
 resources:
   - name: master
