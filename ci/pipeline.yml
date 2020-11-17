@@ -4,6 +4,8 @@ resource_types:
     type: docker-image
     source:
       repository: jtarchie/pr
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
 
 resources:
   - name: master
@@ -50,6 +52,7 @@ jobs:
     build_logs_to_retain: 20
     plan:
       - get: pr
+        params: {git.depth: 1}
         trigger: true
         version: every
       - put: pr
@@ -69,6 +72,7 @@ jobs:
     build_logs_to_retain: 10
     plan:
       - get: master
+        params: {depth: 1}
         trigger: true
       - put: dind
         params: { build: master/dind, tag_as_latest: true }
@@ -76,6 +80,7 @@ jobs:
     build_logs_to_retain: 10
     plan:
       - get: master
+        params: {depth: 1}
         trigger: true
       - put: ubuntu-git
         params: { build: master/ubuntu-git, tag_as_latest: true }
