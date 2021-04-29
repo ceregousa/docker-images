@@ -1,7 +1,15 @@
 ---
 resource_types:
-  - name: pull-request
+  - name: registry-image-resource  # latest docker resource that does HEAD request in check
     type: docker-image
+    check_every: 24h
+    source:
+      repository: concourse/registry-image-resource  # docker hub repo
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
+
+  - name: pull-request
+    type: registry-image-resource
     source:
       repository: jtarchie/pr
       username: {{dockerhub_username}}
@@ -29,6 +37,7 @@ resources:
       private_key: {{cerebot-github-priv-key}}
   - name: dind
     type: docker-image
+    check_every: 24h
     source:
       repository: ceregousa/dind
       tag: docker-1.13
@@ -36,12 +45,14 @@ resources:
       password: {{dockerhub_password}}
   - name: ubuntu-git
     type: docker-image
+    check_every: 24h
     source:
       repository: ceregousa/ubuntu-git
       username: {{dockerhub_username}}
       password: {{dockerhub_password}}
   - name: s3-resource-simple
     type: docker-image
+    check_every: 24h
     source:
       repository: ceregousa/s3-resource-simple
       username: {{dockerhub_username}}
