@@ -1,15 +1,8 @@
 ---
 resource_types:
-  - name: registry-image-resource  # latest docker resource that does HEAD request in check
-    type: docker-image
-    check_every: 24h
-    source:
-      repository: concourse/registry-image-resource  # docker hub repo
-      username: {{dockerhub_username}}
-      password: {{dockerhub_password}}
-
   - name: pull-request
-    type: registry-image-resource
+    type: docker-image
+    check_every: 5m
     source:
       repository: jtarchie/pr
       username: {{dockerhub_username}}
