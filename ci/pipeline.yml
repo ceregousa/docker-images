@@ -2,7 +2,7 @@
 resource_types:
   - name: pull-request
     type: docker-image
-    check_every: 5m
+    check_every: 24h
     source:
       repository: jtarchie/pr
       username: {{dockerhub_username}}
