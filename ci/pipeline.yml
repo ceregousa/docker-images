@@ -1,10 +1,10 @@
 ---
 resource_types:
-  - name: pull-request
+  - name: pullrequest
     type: docker-image
     check_every: 24h
     source:
-      repository: jtarchie/pr
+      repository: teliaoss/github-pr-resource
       username: {{dockerhub_username}}
       password: {{dockerhub_password}}
 
@@ -21,13 +21,11 @@ resources:
       uri: git@github.com:ceregousa/s3-resource-simple.git
       branch: master
       private_key: {{cerebot-github-priv-key}}
-  - name: pr
-    type: pull-request
+  - name: pullr
+    type: pullrequest
     source:
-      repo: ceregousa/docker-images
+      repository: ceregousa/docker-images
       access_token: {{cerebot-access-token}}
-      uri: {{cerego_docker_repo}}
-      private_key: {{cerebot-github-priv-key}}
   - name: dind
     type: docker-image
     check_every: 24h
@@ -55,23 +53,24 @@ jobs:
   - name: PR builder
     build_logs_to_retain: 20
     plan:
-      - get: pr
-        params: {git.depth: 1}
+      - get: pullr
+        params: {git_depth: 1, integration_tool: checkout}
         trigger: true
         version: every
-      - put: pr
-        params: { path: pr, status: pending }
+      - put: pullr
+        params: { path: pullr, status: pending }
       - aggregate:
         - put: dind
-          params: { build: pr/dind, tag: pr/ci/tags/test }
+          params: { build: pullr/dind, tag: pullr/ci/tags/test }
         - put: ubuntu-git
-          params: { build: pr/ubuntu-git, tag: pr/ci/tags/test }
+          params: { build: pullr/ubuntu-git, tag: pullr/ci/tags/test }
     on_success:
-      put: pr
-      params: { path: pr, status: success }
+      put: pullr
+      params: { path: pullr, status: success }
     on_failure:
-      put: pr
-      params: { path: pr, status: failure }
+      put: pullr
+      params: { path: pullr, status: failure }
+
   - name: build dind
     build_logs_to_retain: 10
     plan:
@@ -80,6 +79,7 @@ jobs:
         trigger: true
       - put: dind
         params: { build: master/dind, tag_as_latest: true }
+
   - name: build ubuntu-git
     build_logs_to_retain: 10
     plan:
@@ -88,6 +88,7 @@ jobs:
         trigger: true
       - put: ubuntu-git
         params: { build: master/ubuntu-git, tag_as_latest: true }
+
   - name: build s3-resource-simple
     build_logs_to_retain: 10
     plan:
