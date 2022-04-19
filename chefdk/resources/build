@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e -x
+
+# Installing build-essential
+apt-get update
+apt-get install -y curl
+
+# Downloading chefdk
+curl -sSlo /resources/chefdk.deb \
+  https://packages.chef.io/files/stable/chefdk/${CHEFDK_VERSION}/ubuntu/16.04/chefdk_${CHEFDK_VERSION}-1_amd64.deb
+
+# Installing chefdk
+dpkg -i /resources/chefdk.deb
+
+# CIS Hardening
+sed -i -e "s/^PASS_MAX_DAYS\s\+99999/PASS_MAX_DAYS   60/" /etc/login.defs
+sed -i -e "s/^PASS_MIN_DAYS\s\+0/PASS_MIN_DAYS	7/" /etc/login.defs
+sed -i -e "s/^UMASK\s\+022/UMASK	027/" /etc/login.defs
+
+# Cleaning
+apt-get remove --purge -y curl
+apt-get clean
+rm -rf /tmp/*
