@@ -26,6 +26,14 @@ resources:
     source:
       repository: ceregousa/docker-images
       access_token: {{cerebot-access-token}}
+  - name: chefdk
+    type: docker-image
+    check_every: 24h
+    source:
+      repository: ceregousa/chef_repo
+      tag: chefdk3
+      username: {{dockerhub_username}}
+      password: {{dockerhub_password}}
   - name: dind
     type: docker-image
     check_every: 24h
@@ -60,6 +68,8 @@ jobs:
       - put: pullr
         params: { path: pullr, status: pending }
       - aggregate:
+        - put: chefdk
+          params: { build: pullr/chefdk, tag: pullr/ci/tags/test }
         - put: dind
           params: { build: pullr/dind, tag: pullr/ci/tags/test }
         - put: ubuntu-git
@@ -71,12 +81,19 @@ jobs:
       put: pullr
       params: { path: pullr, status: failure }
 
+  - name: build chefdk
+    build_logs_to_retain: 10
+    plan:
+      - get: master
+        params: {depth: 1}
+      - put: chefdk
+        params: { build: master/chefdk }
+
   - name: build dind
     build_logs_to_retain: 10
     plan:
       - get: master
         params: {depth: 1}
-        trigger: true
       - put: dind
         params: { build: master/dind, tag_as_latest: true }
 
@@ -85,7 +102,6 @@ jobs:
     plan:
       - get: master
         params: {depth: 1}
-        trigger: true
       - put: ubuntu-git
         params: { build: master/ubuntu-git, tag_as_latest: true }
 
