@@ -12,6 +12,9 @@ curl -sSlo /resources/chefdk.deb \
 # Installing chefdk
 dpkg -i /resources/chefdk.deb
 
+# Installing capistrano gems for deployments
+chef exec gem install --no-document capistrano-rails capistrano-rbenv capistrano-chef capistrano-deploytags
+
 # CIS Hardening
 sed -i -e "s/^PASS_MAX_DAYS\s\+99999/PASS_MAX_DAYS   60/" /etc/login.defs
 sed -i -e "s/^PASS_MIN_DAYS\s\+0/PASS_MIN_DAYS	7/" /etc/login.defs
