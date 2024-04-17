@@ -1,7 +1,7 @@
 FROM alpine:3.5
 
-ENV DOCKER_VERSION=17.12.1-ce \
-  DOCKER_COMPOSE_VERSION=1.21.2 \
+ENV DOCKER_VERSION=18.09.9 \
+  DOCKER_COMPOSE_VERSION=1.22.0 \
   DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev" \
   OTHER="git"
 
