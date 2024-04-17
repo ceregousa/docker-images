@@ -11,7 +11,10 @@ RUN apk --update --no-cache add $DOCKER_PACKAGES $OTHER && \
     mv /docker/* /bin/ && chmod +x /bin/docker* \
 && \
     apk add py-pip && \
-    pip install docker-compose==${DOCKER_COMPOSE_VERSION}
+    pip install docker-compose==${DOCKER_COMPOSE_VERSION} \
+&& \
+    docker -v && \
+    docker-compose -v
 
 RUN curl -L https://github.com/progrium/entrykit/releases/download/v0.4.0/entrykit_0.4.0_Linux_x86_64.tgz | tar zx && \
     chmod +x entrykit && \

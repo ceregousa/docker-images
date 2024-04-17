@@ -38,6 +38,11 @@ sanitize_cgroups() {
             ln -s "$mountpoint" "/sys/fs/cgroup/$sys"
         fi
     done
+
+    if [ ! -e /sys/fs/cgroup/systemd ] && [ $(cat /proc/self/cgroup | grep '^1:name=openrc:' | wc -l) -eq 0 ]; then
+      mkdir /sys/fs/cgroup/systemd
+      mount -t cgroup -o none,name=systemd none /sys/fs/cgroup/systemd
+    fi
 }
 
 start_docker() {
