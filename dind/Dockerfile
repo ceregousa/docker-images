@@ -11,7 +11,8 @@ RUN apk --update --no-cache add $DOCKER_PACKAGES $OTHER && \
     mv /docker/* /bin/ && chmod +x /bin/docker* \
 && \
     apk add py-pip && \
-    pip install docker-compose==${DOCKER_COMPOSE_VERSION} --break-system-packages \
+    pip install docker-compose==${DOCKER_COMPOSE_VERSION} --break-system-packages && \
+    pip install PyYAML --upgrade --break-system-packages \
 && \
     docker -v && \
     docker-compose -v
