@@ -1,5 +1,5 @@
 build:
-	docker build -t ceregousa/dind:docker-1.13 .
+	docker build -t ceregousa/dind:docker-19.03.9 .
 
 run:
 	docker run --privileged ceregousa/dind
