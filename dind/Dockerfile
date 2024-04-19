@@ -1,8 +1,8 @@
-FROM alpine:3.5
+FROM alpine:3.19
 
-ENV DOCKER_VERSION=18.09.9 \
-  DOCKER_COMPOSE_VERSION=1.22.0 \
-  DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python-dev" \
+ENV DOCKER_VERSION=19.03.9 \
+  DOCKER_COMPOSE_VERSION=1.24.1 \
+  DOCKER_PACKAGES="curl device-mapper mkinitfs bash e2fsprogs e2fsprogs-extra iptables python3-dev" \
   OTHER="git"
 
 # Install Docker, Docker Compose
@@ -11,7 +11,7 @@ RUN apk --update --no-cache add $DOCKER_PACKAGES $OTHER && \
     mv /docker/* /bin/ && chmod +x /bin/docker* \
 && \
     apk add py-pip && \
-    pip install docker-compose==${DOCKER_COMPOSE_VERSION} \
+    pip install docker-compose==${DOCKER_COMPOSE_VERSION} --break-system-packages \
 && \
     docker -v && \
     docker-compose -v
